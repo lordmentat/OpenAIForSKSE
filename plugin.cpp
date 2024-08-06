@@ -1,12 +1,31 @@
-SKSEPluginLoad(const SKSE::LoadInterface *skse) {
+#include "Logger.h"
+#include "PapyrusFunctions.h"
+#include "Utility.h"
+#include "WebFunctionsApiImpl.h"
+#include "Interface/WebFunctionsApi.h"
+#include "Interface/WebFunctionsExchangeMessage.h"
+
+
+void SKSEMessageHandler(SKSE::MessagingInterface::Message* message) {
+    switch (message->type) {
+        case WebFunctions::WebFunctionsExchangeMessage::kMessage_ExchangeInterface: {
+            WebFunctions::WebFunctionsExchangeMessage* exchangeMessage =
+                (WebFunctions::WebFunctionsExchangeMessage*)message->data;
+            exchangeMessage->api = WebFunctionsImpl::WebFunctionsApiImpl::GetSingleton();
+        } break;
+    }
+}
+
+SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);
 
-    // This example prints "Hello, world!" to the Skyrim ~ console.
-    // To view it, open the ~ console from the Skyrim Main Menu.
-    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
-        if (message->type == SKSE::MessagingInterface::kDataLoaded)
-            RE::ConsoleLog::GetSingleton()->Print("Hello, world!");
-    });
+    SetupLog();
+
+    SKSE::GetPapyrusInterface()->Register(WebPapyrusFunctions::BindPapyrusFunctions);
+
+    SKSE::GetMessagingInterface()->RegisterListener(nullptr, SKSEMessageHandler);
+
+    //LoadDataFromINI();
 
     return true;
 }
