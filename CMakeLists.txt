@@ -44,7 +44,6 @@ FetchContent_MakeAvailable(cpr)
 
 set(sources
         Logger.cpp
-        #Utility.cpp
         PapyrusFunctions.cpp
         WebFunctionsApiImpl.cpp
         Plugin.cpp
